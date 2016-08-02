@@ -18,24 +18,33 @@ app.use(function(req, res) {
 
 wss.on('connection', function connection(ws) {
     var location = url.parse(ws.upgradeReq.url, true);
-
-    if (location != API_PATH) {
+    var path = location.pathname;
+    if (path != API_PATH) {
         return ws.send('Not found Service.');
     }
 
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
+        try {
+            message = JSON.parse(message);
+        } catch (e) {
+            return ws.send(serialize({
+                status: 'error',
+                message: e.message || 'invalid JSON parameter.'
+            }));
+        }
+
         if (message && message.tel && message.message) {
             service.saveMessage(message).then(function(msg) {
-                ws.send({
+                ws.send(serialize({
                     status: 'success',
                     message: 'saved'
-                });
+                }));
             }).catch(function(e) {
-                ws.send({
+                ws.send(serialize({
                     status: 'error',
                     message: e.message || 'save failed.'
-                });
+                }));
             })
         } else {
             ws.send('invalid parameter.');
@@ -49,3 +58,10 @@ server.on('request', app);
 server.listen(port, function() {
     console.log('Listening on ' + server.address().port)
 });
+
+function serialize(obj) {
+    if (obj) {
+        return JSON.stringify(obj);
+    }
+    return '';
+}
