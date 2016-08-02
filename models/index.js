@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var config = require('../config');
 
+mongoose.Promise = global.Promise;
+
 //without safe mode
 //mongoose.connect(config.db.url);
 //mongoose.connection.on('error', function(e){console.log(e); process.exit(1);});
