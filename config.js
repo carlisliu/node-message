@@ -1,6 +1,6 @@
 module.exports = {
     db: {
-        url : 'mongodb://localhost:27017/order',
+        url: 'mongodb://localhost:27017/order',
         username: 'root',
         password: 'root'
     }
