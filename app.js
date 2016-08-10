@@ -1,3 +1,4 @@
+require('tingyun');
 var server = require('http').createServer();
 var url = require('url');
 var WebSocketServer = require('ws').Server;
@@ -25,6 +26,9 @@ wss.on('connection', function connection(ws) {
 
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
+        var args = [].slice.call(arguments, 0);
+        var segment = args[args.length - 2];
+        var action = args[args.length - 1];
         try {
             message = JSON.parse(message);
         } catch (e) {
@@ -36,6 +40,13 @@ wss.on('connection', function connection(ws) {
 
         if (message && message.tel && message.message) {
             service.saveMessage(message).then(function(msg) {
+                //console.log(segment, action);
+                if (segment && segment.end) {
+                    segment.end();
+                }
+                if (action && action.end) {
+                    action.end();
+                }
                 ws.send(serialize({
                     status: 'success',
                     message: 'saved'
@@ -45,7 +56,7 @@ wss.on('connection', function connection(ws) {
                     status: 'error',
                     message: e.message || 'save failed.'
                 }));
-            })
+            });
         } else {
             ws.send('invalid parameter.');
         }
