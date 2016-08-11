@@ -1,4 +1,4 @@
-require('tingyun');
+var tingyun = require('tingyun');
 var server = require('http').createServer();
 var url = require('url');
 var WebSocketServer = require('ws').Server;
@@ -40,6 +40,20 @@ wss.on('connection', function connection(ws) {
 
         if (message && message.tel && message.message) {
             service.saveMessage(message).then(function(msg) {
+                
+                tingyun.blocked(block.bind(null, 40));
+
+                function block(n) {
+                    function fibonacci(n) {
+                        if (n < 2) {
+                            return 1;
+                        }
+                        return fibonacci(n - 2) + fibonacci(n - 1);
+                    }
+                    fibonacci(n);
+                }
+                console.log('blocked');
+            }).then(function(msg) {
                 //console.log(segment, action);
                 if (segment && segment.end) {
                     segment.end();
