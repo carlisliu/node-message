@@ -40,7 +40,6 @@ wss.on('connection', function connection(ws) {
 
         if (message && message.tel && message.message) {
             service.saveMessage(message).then(function(msg) {
-                
                 tingyun.blocked(block.bind(null, 40));
 
                 function block(n) {
@@ -54,7 +53,6 @@ wss.on('connection', function connection(ws) {
                 }
                 console.log('blocked');
             }).then(function(msg) {
-                //console.log(segment, action);
                 if (segment && segment.end) {
                     segment.end();
                 }
